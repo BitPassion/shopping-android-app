@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.nearbyshops.enduserappnew.MyApplication;
 import org.nearbyshops.enduserappnew.Preferences.PrefLocation;
 import org.nearbyshops.enduserappnew.R;
 
@@ -68,11 +67,11 @@ public class ViewHolderSetLocationManually extends RecyclerView.ViewHolder{
 
         if(isLocationSetByUser)
         {
-            locationAddress.setText(context.getString(R.string.current_location_custom));
+            locationAddress.setText("Current Location - Set by you");
         }
         else
         {
-            locationAddress.setText(context.getString(R.string.current_location_automated));
+            locationAddress.setText("Current Location - Detected Automatically");
         }
     }
 

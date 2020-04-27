@@ -169,7 +169,7 @@ public class ViewHolderRoleDashboard extends RecyclerView.ViewHolder{
 
             viewModelShop.getShopForShopStaff();
             progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage(context.getString(R.string.get_shop_details));
+            progressDialog.setMessage("Please wait ... getting shop details !");
             progressDialog.show();
 
         }
@@ -197,9 +197,9 @@ public class ViewHolderRoleDashboard extends RecyclerView.ViewHolder{
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
-            dialog.setTitle(context.getString(R.string.create_shop))
-                    .setMessage(context.getString(R.string.become_shop_seller))
-                    .setPositiveButton(context.getString(R.string.yes),new DialogInterface.OnClickListener(){
+            dialog.setTitle("Create your Shop !")
+                    .setMessage("Do you want to Create your Shop and become a seller !")
+                    .setPositiveButton("Yes",new DialogInterface.OnClickListener(){
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -219,11 +219,11 @@ public class ViewHolderRoleDashboard extends RecyclerView.ViewHolder{
 
                         }
                     })
-                    .setNegativeButton(context.getString(R.string.no),new DialogInterface.OnClickListener() {
+                    .setNegativeButton("No",new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            showToastMessage(context.getString(R.string.cancelled) +" !");
+                            showToastMessage("Cancelled !");
                         }
                     })
                     .show();
@@ -254,26 +254,26 @@ public class ViewHolderRoleDashboard extends RecyclerView.ViewHolder{
         if(user.getRole()==User.ROLE_SHOP_ADMIN_CODE)
         {
             marketName.setText(marketNameString);
-            dashboardName.setText(context.getString(R.string.shop_dashboard));
-            dashboardDescription.setText(context.getString(R.string.access_shop));
+            dashboardName.setText("Shop Dashboard");
+            dashboardDescription.setText("Press here to access the shop dashboard !");
         }
         else if(user.getRole()==User.ROLE_SHOP_STAFF_CODE)
         {
             marketName.setText(marketNameString);
-            dashboardName.setText(context.getString(R.string.staff_dashboard));
-            dashboardDescription.setText(context.getString(R.string.access_staff));
+            dashboardName.setText("Shop Staff Dashboard");
+            dashboardDescription.setText("Press here to access shop dashboard !");
         }
         else if(user.getRole()==User.ROLE_DELIVERY_GUY_SELF_CODE)
         {
             marketName.setText(marketNameString);
-            dashboardName.setText(context.getString(R.string.delivery_dashboard));
-            dashboardDescription.setText(context.getString(R.string.access_delivery));
+            dashboardName.setText("Delivery Dashboard");
+            dashboardDescription.setText("Press here to access the Delivery dashboard !");
         }
         else if(user.getRole()==User.ROLE_ADMIN_CODE)
         {
             marketName.setText(marketNameString);
-            dashboardName.setText(context.getString(R.string.admin_dashboard);
-            dashboardDescription.setText(context.getString(R.string.access_admin));
+            dashboardName.setText("Admin Dashboard");
+            dashboardDescription.setText("Press here to access the admin dashboard !");
         }
         else if(user.getRole()==User.ROLE_STAFF_CODE)
         {
