@@ -31,8 +31,6 @@ import com.squareup.picasso.Picasso;
 import org.nearbyshops.enduserappnew.API.UserService;
 import org.nearbyshops.enduserappnew.EditDataScreens.EditShop.EditShop;
 import org.nearbyshops.enduserappnew.EditDataScreens.EditShop.EditShopFragment;
-import org.nearbyshops.enduserappnew.InventoryOrders.InventoryDeliveryPerson.DeliveryPersonInventory;
-import org.nearbyshops.enduserappnew.InventoryOrders.InventoryDeliveryPerson.FragmentDeprecated.DeliveryInventoryFragment;
 import org.nearbyshops.enduserappnew.Model.ModelRoles.User;
 import org.nearbyshops.enduserappnew.EditDataScreens.EditProfile.EditProfile;
 import org.nearbyshops.enduserappnew.EditDataScreens.EditProfile.FragmentEditProfile;
@@ -44,8 +42,10 @@ import org.nearbyshops.enduserappnew.Preferences.PrefServiceConfig;
 import org.nearbyshops.enduserappnew.Preferences.PrefShopAdminHome;
 import org.nearbyshops.enduserappnew.Utility.UtilityFunctions;
 import org.nearbyshops.enduserappnew.ViewModels.ViewModelShop;
+import org.nearbyshops.enduserappnew.aSellerModule.DashboardDeliveryGuy.DeliveryHome;
 import org.nearbyshops.enduserappnew.aSellerModule.DashboardShopAdmin.ShopAdminHome;
 import org.nearbyshops.enduserappnew.aSellerModule.DashboardShopStaff.ShopDashboardForStaff;
+import org.nearbyshops.enduserappnew.aSellerModule.InventoryDeliveryPerson.DeliveryGuyDashboard;
 import org.nearbyshops.enduserappnew.adminModule.DashboardAdmin.AdminDashboard;
 import org.nearbyshops.enduserappnew.adminModule.DashboardStaff.StaffDashboard;
 
@@ -273,7 +273,7 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
             dashboardName.setText("Shop Staff Dashboard");
             dashboardDescription.setText("Press here to access the staff dashboard !");
         }
-        else if(user.getRole()==User.ROLE_DELIVERY_GUY_SELF_CODE || user.getRole()==User.ROLE_DELIVERY_GUY_CODE)
+        else if(user.getRole()==User.ROLE_DELIVERY_GUY_SELF_CODE)
         {
             dashboardName.setText("Delivery Dashboard");
             dashboardDescription.setText("Press here to access the Delivery dashboard !");
@@ -294,8 +294,6 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
         }
 
     }
-
-
 
 
 
@@ -330,16 +328,7 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
         }
         else if(user.getRole()==User.ROLE_DELIVERY_GUY_SELF_CODE)
         {
-
-            Intent intent = new Intent(getActivity(), DeliveryPersonInventory.class);
-            intent.putExtra(DeliveryInventoryFragment.SCREEN_MODE_INTENT_KEY,DeliveryInventoryFragment.SCREEN_MODE_DELIVERY_PERSON_VENDOR);
-            startActivity(intent);
-
-        }
-        else if(user.getRole()==User.ROLE_DELIVERY_GUY_CODE)
-        {
-            Intent intent = new Intent(getActivity(), DeliveryPersonInventory.class);
-            intent.putExtra(DeliveryInventoryFragment.SCREEN_MODE_INTENT_KEY,DeliveryInventoryFragment.SCREEN_MODE_DELIVERY_PERSON_MARKET);
+            Intent intent = new Intent(getActivity(), DeliveryGuyDashboard.class);
             startActivity(intent);
 
         }
@@ -370,14 +359,11 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode==2323)
         {
-//            Intent intent = new Intent(getActivity(), ShopAdminHome.class);
-//            startActivity(intent);
+            Intent intent = new Intent(getActivity(), ShopAdminHome.class);
+            startActivity(intent);
         }
-
-
     }
 
 
@@ -424,7 +410,7 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @OnClick(R.id.privacy_policy_block)
     void privacyPolicyClick()
     {
-        String url = getString(R.string.privacy_policy_link);
+        String url = getString(R.string.tos_link);
 
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
@@ -437,8 +423,7 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @OnClick(R.id.tos_block)
     void termsOfServiceClick()
     {
-        String url = getString(R.string.tos_link);
-
+        String url = getString(R.string.privacy_policy_link);
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

@@ -8,6 +8,7 @@ import org.nearbyshops.enduserappnew.Model.ModelMarket.Market;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.*;
 
 
@@ -17,12 +18,12 @@ import retrofit2.http.*;
 public interface MarketService {
 
 
-    @GET("/api/v1/Markets/UpdateService")
+    @GET("/api/v1/ServiceConfiguration/UpdateService")
     Call<ResponseBody> saveService(@Query("ServiceURL") String serviceURL);
 
 
 
-    @PUT("/api/v1/Markets/UpdateByStaff/{ServiceID}")
+    @PUT("/api/v1/ServiceConfiguration/UpdateByStaff/{ServiceID}")
     Call<ResponseBody> updateMarket(@Header("Authorization") String headers,
                                       @Body Market market,
                                       @Path("ServiceID") int serviceID);
@@ -30,7 +31,7 @@ public interface MarketService {
 
 
 
-    @GET("/api/v1/Markets/NearbyMarkets")
+    @GET("/api/v1/ServiceConfiguration")
     Call<ServiceConfigurationEndPoint> getMarketsList(
             @Query("latCenter") Double latCenter, @Query("lonCenter") Double lonCenter,
             @Query("ServiceURL") String serviceURL,
@@ -41,7 +42,7 @@ public interface MarketService {
 
 
 
-    @GET("/api/v1/Markets/NearbyMarkets")
+    @GET("/api/v1/ServiceConfiguration")
     Call<ServiceConfigurationEndPoint> getMarketsList(
             @Header("Authorization") String headers,
             @Query("latCenter") Double latCenter, @Query("lonCenter") Double lonCenter,
@@ -57,7 +58,7 @@ public interface MarketService {
 
 
 
-    @GET ("/api/v1/Markets/MarketsListForAdmin")
+    @GET ("/api/v1/ServiceConfiguration/MarketsList")
     Call<ServiceConfigurationEndPoint> getMarketsList(
             @Header("Authorization") String headers,
             @Query("latCenter")Double latCenter, @Query("lonCenter")Double lonCenter,
@@ -77,7 +78,7 @@ public interface MarketService {
 
 
 
-    @GET ("/api/v1/Markets/GetMarketDetails/{MarketID}")
+    @GET ("/api/v1/ServiceConfiguration/GetMarketDetails/{MarketID}")
     Call<Market> getMarketDetails(@Path("MarketID")int marketID,
                                      @Query("latCenter")double latCenter, @Query("lonCenter")double lonCenter);
 
@@ -87,14 +88,14 @@ public interface MarketService {
 
 
     // Image Calls
-    @POST("/api/v1/Markets/Image")
+    @POST("/api/v1/ServiceConfiguration/Image")
     Call<Image> uploadImage(@Header("Authorization") String headers,
                             @Body RequestBody image);
 
     //@QueryParam("PreviousImageName") String previousImageName
 
 
-    @DELETE("/api/v1/Markets/Image/{name}")
+    @DELETE("/api/v1/ServiceConfiguration/Image/{name}")
     Call<ResponseBody> deleteImage(@Header("Authorization") String headers,
                                    @Path("name") String fileName);
 

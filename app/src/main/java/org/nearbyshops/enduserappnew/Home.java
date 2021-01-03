@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 
@@ -37,18 +40,21 @@ import org.nearbyshops.enduserappnew.Interfaces.ShowFragment;
 import org.nearbyshops.enduserappnew.Lists.CartsList.CartsListFragment;
 import org.nearbyshops.enduserappnew.Lists.ItemsByCategory.ItemsByCatFragment;
 import org.nearbyshops.enduserappnew.Lists.ItemsInShopByCategory.ItemsInShopByCatFragment;
-import org.nearbyshops.enduserappnew.mfiles.Markets.MarketsFragmentNew;
-import org.nearbyshops.enduserappnew.mfiles.Markets.ViewModelMarkets;
+import org.nearbyshops.enduserappnew.Lists.Markets.MarketsFragmentNew;
+import org.nearbyshops.enduserappnew.Lists.Markets.ViewModelMarkets;
 import org.nearbyshops.enduserappnew.Lists.OrderHistory.OrdersHistoryFragment;
 import org.nearbyshops.enduserappnew.Lists.ShopsList.FragmentShopsList;
 import org.nearbyshops.enduserappnew.Login.LoginPlaceholder.FragmentSignInMessage;
+import org.nearbyshops.enduserappnew.MyApplication;
 import org.nearbyshops.enduserappnew.Preferences.PrefGeneral;
 import org.nearbyshops.enduserappnew.Preferences.PrefLocation;
 import org.nearbyshops.enduserappnew.Preferences.PrefLogin;
 import org.nearbyshops.enduserappnew.Preferences.PrefServiceConfig;
+import org.nearbyshops.enduserappnew.ProfileFragment;
 import org.nearbyshops.enduserappnew.PushOneSignal.PrefOneSignal;
 import org.nearbyshops.enduserappnew.PushOneSignal.UpdateOneSignalID;
-import org.nearbyshops.enduserappnew.Services.LocationService;
+import org.nearbyshops.enduserappnew.R;
+import org.nearbyshops.enduserappnew.Services.LocationUpdateService;
 import org.nearbyshops.enduserappnew.Services.UpdateServiceConfiguration;
 import org.nearbyshops.enduserappnew.Utility.UtilityFunctions;
 
@@ -68,7 +74,14 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     public static final String TAG_MARKET_FRAGMENT = "tag_market_fragment";
 
 
+    private static final int REQUEST_CHECK_SETTINGS = 100;
+
+
+
     BottomNavigationView bottomBar;
+
+    LocationManager locationManager;
+    LocationListener locationListener;
 
 
 
@@ -111,7 +124,7 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
 
 
 
-        if (PrefGeneral.isMultiMarketEnabled(this)) {
+        if (PrefGeneral.getMultiMarketMode(this)) {
 
             bottomBar.getMenu().getItem(4).setTitle("Markets");
         }
@@ -173,7 +186,7 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
                 }
                 else if(menuItem.getItemId()== R.id.bottom_tab_profile)
                 {
-                    showProfileFragment();
+                    showProfileFragment(false);
                 }
 
 
@@ -316,7 +329,7 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
 
     @Override
     public void loggedOut() {
-        showProfileFragment();
+        showProfileFragment(true);
     }
 
 
@@ -387,7 +400,7 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
             showToastMessage("Permission Granted !");
 
 
-            startService(new Intent(this, LocationService.class));
+            startService(new Intent(this, LocationUpdateService.class));
 //            fetchLocation();
 
 
@@ -409,20 +422,31 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
 
 
     @Override
-    public void showProfileFragment() {
+    public void showProfileFragment(boolean refreshFragment) {
 
-        if (PrefGeneral.isMultiMarketEnabled(this)) {
+        if (PrefGeneral.getMultiMarketMode(this)) {
             // no market selected therefore show available markets in users area
 
 
-
-            if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
-
+            if(refreshFragment)
+            {
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
                         .commit();
             }
+            else
+            {
+
+                if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
+
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
+                            .commit();
+                }
+            }
+
 
         } else {
             // single market mode
@@ -457,7 +481,24 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     @Override
     public void showOrdersFragment() {
 
-        if (PrefLogin.getUser(getBaseContext()) == null) {
+
+
+
+        if (PrefGeneral.getMultiMarketMode(this) && PrefGeneral.getServiceURL(this) == null) {
+            // no market selected therefore show available markets in users area
+
+
+            if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
+                        .commit();
+
+            }
+
+
+
+        } else if (PrefLogin.getUser(getBaseContext()) == null) {
 
             showLoginFragment();
 
@@ -465,13 +506,12 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
         else {
 
 
+
             if(getSupportFragmentManager().findFragmentByTag(TAG_ORDERS_FRAGMENT)==null)
             {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container,
-                                OrdersHistoryFragment.newInstance(PrefLogin.getUser(this).getUserID(),0,OrdersHistoryFragment.MODE_END_USER),
-                                TAG_ORDERS_FRAGMENT)
+                        .replace(R.id.fragment_container, OrdersHistoryFragment.newInstance(true,false,false), TAG_ORDERS_FRAGMENT)
                         .commitNow();
 
             }
@@ -483,11 +523,29 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     @Override
     public void showCartFragment() {
 
-        if (PrefLogin.getUser(getBaseContext()) == null) {
+
+        if (PrefGeneral.getMultiMarketMode(this) && PrefGeneral.getServiceURL(this) == null) {
+            // no market selected therefore show available markets in users area
+
+
+            if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
+                        .commitNow();
+
+            }
+
+
+
+
+        } else if (PrefLogin.getUser(getBaseContext()) == null) {
 
             showLoginFragment();
+            return;
 
         }
+
         else {
 
 
@@ -512,12 +570,31 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     public void showShopsFragment() {
 
 
+        if (PrefGeneral.getMultiMarketMode(this) && PrefGeneral.getServiceURL(this) == null) {
+            // no market selected therefore show available markets in users area
 
-        if (getSupportFragmentManager().findFragmentByTag(TAG_SHOPS_FRAGMENT) == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, FragmentShopsList.newInstance(false), TAG_SHOPS_FRAGMENT)
-                    .commitNow();
+
+            if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
+                        .commitNow();
+
+            }
+
+
+        } else {
+
+
+
+            if (getSupportFragmentManager().findFragmentByTag(TAG_SHOPS_FRAGMENT) == null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, FragmentShopsList.newInstance(false), TAG_SHOPS_FRAGMENT)
+                        .commitNow();
+            }
+
         }
 
     }
@@ -529,27 +606,51 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     @Override
     public void showItemsFragment() {
 
-        boolean singleVendorEnabled = getResources().getBoolean(R.bool.single_vendor_mode_enabled);
 
 
-        if(singleVendorEnabled)
-        {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, ItemsInShopByCatFragment.newInstance(true,
-                            ItemsInShopByCatFragment.MODE_ITEMS_IN_SHOP_SINGLE_VENDOR),
-                            TAG_ITEMS_FRAGMENT )
-                    .commitNow();
-        }
-        else
-        {
+//        showToast("Show Items Triggered !");
 
-            if (getSupportFragmentManager().findFragmentByTag(TAG_ITEMS_FRAGMENT) == null) {
+
+        if (PrefGeneral.getMultiMarketMode(this) && PrefGeneral.getServiceURL(this) == null) {
+            // no market selected therefore show available markets in users area
+
+
+            if (getSupportFragmentManager().findFragmentByTag(TAG_MARKET_FRAGMENT) == null) {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, new ItemsByCatFragment(), TAG_ITEMS_FRAGMENT)
+                        .replace(R.id.fragment_container, new MarketsFragmentNew(), TAG_MARKET_FRAGMENT)
+                        .commitNow();
+
+            }
+
+
+
+        }
+        else {
+
+
+
+            boolean singleVendorEnabled = getResources().getBoolean(R.bool.single_vendor_mode_enabled);
+
+
+            if(singleVendorEnabled)
+            {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, ItemsInShopByCatFragment.newInstance(true), TAG_ITEMS_FRAGMENT)
                         .commitNow();
             }
+            else
+            {
+
+                if (getSupportFragmentManager().findFragmentByTag(TAG_ITEMS_FRAGMENT) == null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, new ItemsByCatFragment(), TAG_ITEMS_FRAGMENT)
+                            .commitNow();
+                }
+            }
+
         }
     }
 
@@ -585,8 +686,7 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
 
 
     void showToastMessage(String message) {
-
-        UtilityFunctions.showToastMessage(this,message);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -703,6 +803,14 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     @Override
     public void marketSelected() {
 
+//            bottomBar.selectTabWithId(R.id.tab_items);
+//            bottomBar.selectTabAtPosition(bottomBar.getCurrentTabPosition());
+//            showItemsFragment();
+
+
+//        showToastMessage("Market Selected : Home ");
+
+
 
         getSupportFragmentManager().popBackStackImmediate(
                 null,
@@ -758,10 +866,8 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     protected void onDestroy() {
         super.onDestroy();
 
-        PrefLocation.locationSetByUser(false,this);
+        PrefLocation.setLocationSetByUser(false,this);
     }
-
-
 
 
 
@@ -811,12 +917,14 @@ public class Home extends AppCompatActivity implements ShowFragment, NotifyAbout
     }
 
 
+
+
     private void setupLocalBroadcastManager()
     {
         IntentFilter filter = new IntentFilter();
 
 //        filter.addAction(UpdateServiceConfiguration.INTENT_ACTION_MARKET_CONFIG_FETCHED);
-        filter.addAction(LocationService.INTENT_ACTION_LOCATION_UPDATED);
+        filter.addAction(LocationUpdateService.INTENT_ACTION_LOCATION_UPDATED);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override

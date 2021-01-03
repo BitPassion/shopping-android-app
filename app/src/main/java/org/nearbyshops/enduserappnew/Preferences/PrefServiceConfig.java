@@ -44,6 +44,9 @@ public class PrefServiceConfig {
 
 
 
+
+
+
     public static void saveServiceConfigLocal(Market configurationLocal, Context context)
     {
         context = MyApplication.getAppContext();
@@ -67,6 +70,7 @@ public class PrefServiceConfig {
     }
 
 
+
     public static Market getServiceConfigLocal(Context context)
     {
         context = MyApplication.getAppContext();
@@ -85,6 +89,7 @@ public class PrefServiceConfig {
     }
 
 
+
     public static String getServiceName(Context context)
     {
         context = MyApplication.getAppContext();
@@ -101,6 +106,7 @@ public class PrefServiceConfig {
             return serviceConfigurationLocal.getServiceName() + " | " + serviceConfigurationLocal.getCity();
         }
     }
+
 
 
     public static String getServiceURL_SDS(Context context) {

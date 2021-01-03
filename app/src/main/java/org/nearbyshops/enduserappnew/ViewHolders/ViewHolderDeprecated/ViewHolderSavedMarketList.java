@@ -13,10 +13,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import org.nearbyshops.enduserappnew.Model.ModelMarket.Market;
-import org.nearbyshops.enduserappnew.mfiles.Markets.AdapterSavedMarkets;
-import org.nearbyshops.enduserappnew.mfiles.ViewHolderMarket.Model.MarketsListData;
+import org.nearbyshops.enduserappnew.Lists.Markets.AdapterSavedMarkets;
+import org.nearbyshops.enduserappnew.ViewHolders.ViewHolderMarket.Model.MarketsList;
 import org.nearbyshops.enduserappnew.R;
-import org.nearbyshops.enduserappnew.mfiles.ViewHolderMarket.ViewHolderMarketSmall;
+import org.nearbyshops.enduserappnew.ViewHolders.ViewHolderMarket.ViewHolderMarket;
+import org.nearbyshops.enduserappnew.ViewHolders.ViewHolderMarket.ViewHolderMarketSmall;
 
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class ViewHolderSavedMarketList extends RecyclerView.ViewHolder {
 
 
 
-    public void setItem(MarketsListData list)
+    public void setItem(MarketsList list)
     {
 
 //        this.configurationGlobal = item;

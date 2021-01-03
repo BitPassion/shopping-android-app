@@ -8,16 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.nearbyshops.enduserappnew.Model.ModelCartOrder.Order;
-import org.nearbyshops.enduserappnew.mfiles.SwitchMarketData;
-import org.nearbyshops.enduserappnew.mfiles.ViewHolderSwitchMarket;
 import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersOrders.ViewHolderOrder;
 import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersCommon.LoadingViewHolder;
 import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersCommon.Models.EmptyScreenDataFullScreen;
 import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersCommon.ViewHolderEmptyScreenFullScreen;
-import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersOrders.ViewHolderOrderEndUser;
-import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersOrders.ViewHolderOrderMarketAdmin;
-import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersOrders.ViewHolderOrderShopAdminHD;
-import org.nearbyshops.enduserappnew.ViewHolders.ViewHoldersOrders.ViewHolderOrderShopAdminPFS;
 
 import java.util.List;
 
@@ -30,19 +24,8 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
 
     public static final int VIEW_TYPE_ORDER = 1;
-    public static final int VIEW_TYPE_ORDER_SHOP_ADMIN = 2;
-    public static final int VIEW_TYPE_ORDER_SHOP_ADMIN_PFS = 3;
-    public static final int VIEW_TYPE_ORDER_END_USER = 4;
-    public static final int VIEW_TYPE_ORDER_MARKET_ADMIN = 5;
-
-
-    public static final int VIEW_TYPE_EMPTY_SCREEN = 10;
-    private final static int VIEW_TYPE_PROGRESS_BAR = 11;
-
-
-    public static final int VIEW_TYPE_SWITCH_MARKET = 16;
-
-
+    public static final int VIEW_TYPE_EMPTY_SCREEN = 3;
+    private final static int VIEW_TYPE_PROGRESS_BAR = 6;
 
 
 
@@ -51,16 +34,14 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private Context context;
     private Fragment fragment;
-    int currentMode;
 
 
 
 
-    Adapter(List<Object> dataset, Fragment fragment, Context context, int currentMode) {
+    Adapter(List<Object> dataset, Fragment fragment, Context context) {
         this.dataset = dataset;
         this.fragment = fragment;
         this.context = context;
-        this.currentMode = currentMode;
     }
 
 
@@ -75,24 +56,7 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
         if(viewType==VIEW_TYPE_ORDER)
         {
-
             return ViewHolderOrder.create(parent,context,fragment);
-        }
-        else if(viewType==VIEW_TYPE_ORDER_SHOP_ADMIN)
-        {
-            return ViewHolderOrderShopAdminHD.create(parent,context,fragment);
-        }
-        else if(viewType==VIEW_TYPE_ORDER_SHOP_ADMIN_PFS)
-        {
-            return ViewHolderOrderShopAdminPFS.create(parent,context,fragment);
-        }
-        else if(viewType==VIEW_TYPE_ORDER_END_USER)
-        {
-            return ViewHolderOrderEndUser.create(parent,context,fragment);
-        }
-        else if(viewType==VIEW_TYPE_ORDER_MARKET_ADMIN)
-        {
-            return ViewHolderOrderMarketAdmin.create(parent,context,fragment);
         }
         else if (viewType == VIEW_TYPE_PROGRESS_BAR) {
 
@@ -101,10 +65,6 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         else if(viewType==VIEW_TYPE_EMPTY_SCREEN)
         {
             return ViewHolderEmptyScreenFullScreen.create(parent,context,fragment);
-        }
-        else if(viewType==VIEW_TYPE_SWITCH_MARKET)
-        {
-            return ViewHolderSwitchMarket.create(parent,fragment.getActivity(),fragment);
         }
 
 
@@ -123,38 +83,7 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
         else if(dataset.get(position) instanceof Order)
         {
-
-            Order order = (Order) dataset.get(position);
-
-            if(currentMode==OrdersHistoryFragment.MODE_SHOP_ADMIN)
-            {
-
-                return VIEW_TYPE_ORDER;
-
-//                if(order.getDeliveryMode()==Order.DELIVERY_MODE_PICKUP_FROM_SHOP)
-//                {
-//                    return VIEW_TYPE_ORDER_SHOP_ADMIN_PFS;
-//                }
-//                else
-//                {
-//                    return VIEW_TYPE_ORDER_SHOP_ADMIN;
-//                }
-            }
-            else if(currentMode==OrdersHistoryFragment.MODE_END_USER)
-            {
-                return VIEW_TYPE_ORDER_END_USER;
-            }
-            else
-            {
-                return VIEW_TYPE_ORDER;
-            }
-
-
-        }
-        else if(dataset.get(position) instanceof SwitchMarketData)
-        {
-
-            return VIEW_TYPE_SWITCH_MARKET;
+            return VIEW_TYPE_ORDER;
         }
         else if(dataset.get(position) instanceof EmptyScreenDataFullScreen)
         {
@@ -171,26 +100,9 @@ class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
 
 
-        if(holderVH instanceof ViewHolderOrderShopAdminHD)
-        {
-            ((ViewHolderOrderShopAdminHD) holderVH).setItem((Order) dataset.get(position));
-        }
-        else if(holderVH instanceof ViewHolderOrderShopAdminPFS)
-        {
-            ((ViewHolderOrderShopAdminPFS) holderVH).setItem((Order) dataset.get(position));
-        }
-        else if(holderVH instanceof ViewHolderOrderEndUser)
-        {
-            ((ViewHolderOrderEndUser) holderVH).setItem((Order) dataset.get(position));
-        }
-        else if(holderVH instanceof ViewHolderOrder)
+        if(holderVH instanceof ViewHolderOrder)
         {
             ((ViewHolderOrder) holderVH).setItem((Order) dataset.get(position));
-        }
-        else if(holderVH instanceof ViewHolderSwitchMarket)
-        {
-            ((ViewHolderSwitchMarket) holderVH).bindDashboard();
-
         }
         else if (holderVH instanceof LoadingViewHolder) {
 

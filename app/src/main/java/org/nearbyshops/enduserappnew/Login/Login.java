@@ -11,7 +11,6 @@ import org.nearbyshops.enduserappnew.Model.ModelMarket.Market;
 import org.nearbyshops.enduserappnew.Preferences.PrefGeneral;
 import org.nearbyshops.enduserappnew.Preferences.PrefServiceConfig;
 import org.nearbyshops.enduserappnew.R;
-import org.nearbyshops.enduserappnew.mfiles.LoginGlobalUsingOTPFragment;
 
 
 public class Login extends AppCompatActivity implements ShowFragmentSelectService, NotifyAboutLogin {
@@ -52,7 +51,7 @@ public class Login extends AppCompatActivity implements ShowFragmentSelectServic
 
 
 
-        if(PrefGeneral.isMultiMarketEnabled(this))
+        if(PrefGeneral.getMultiMarketMode(this))
         {
             if(savedInstanceState==null)
             {
@@ -171,9 +170,6 @@ public class Login extends AppCompatActivity implements ShowFragmentSelectServic
         setResult(RESULT_OK);
         finish();
     }
-
-
-
 
     @Override
     public void loggedOut() {
